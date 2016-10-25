@@ -4,15 +4,18 @@ defined('ABSPATH') or die('No script kiddies please!');
 require_once __DIR__ . '/../../../wp-includes/pluggable.php';
 
 /**
- * Plugin Name: Custom Plugin
- * Plugin URI: http://wordpress.local/
- * Description: Description. <a href="#custom-plugin-item"></a>
+ * Plugin Name: Hooks for Wp
+ * Plugin URI: https://makerise.net/
+ * Description: Hooks for Wp. <a href="#custom-plugin-item"></a>
  * Version: 1.0
- * Author: Plugin Author's Name
- * Author URI: Author's website
+ * Author: Serg G.
+ * Author URI: https://makerise.net/
  * License: GPLv2
  */
-// add notice
+
+/**
+ * Show custom notice.
+ */
 function sample_admin_notice__info() {
     ?>
     <div class="notice notice-warning is-dismissible">
@@ -31,15 +34,14 @@ function sample_admin_notice__info() {
 
 add_action('admin_notices', 'sample_admin_notice__info');
 
-// filtering plugin list
+/**
+ * Filtering plugin list.
+ */
 add_filter('all_plugins', function($params) {
 
     if (isset($params["custom-plugin/index.php"])) {
         apply_notice($params["custom-plugin/index.php"]);
     }
-//    echo "<pre>";
-//    print_r($params);
-//    exit;
 
     return $params;
 });
@@ -48,14 +50,18 @@ function apply_notice(&$data) {
 
 }
 
-// add javascript
+/**
+ * Add javascript.
+ */
 function my_enqueue() {
     wp_enqueue_script('my_custom_script', plugins_url('/custom-script.js', __FILE__));
 }
 
 add_action('admin_enqueue_scripts', 'my_enqueue');
 
-// exclude this plugin from updater
+/**
+ * Exclude this plugin from updater.
+ */
 add_filter('http_request_args', function ( $response, $url ) {
 
     if (0 === strpos($url, 'https://api.wordpress.org/plugins/update-check')) {
@@ -70,6 +76,9 @@ add_filter('http_request_args', function ( $response, $url ) {
     return $response;
 }, 10, 2);
 
+/**
+ * Get comments using filter.
+ */
 function getComments() {
 
     $args = array(
@@ -111,13 +120,11 @@ function getComments() {
         'date_query' => null, // See WP_Date_Query
     );
     $c = get_comments($args);
-    print_r($c);
-
-    exit;
 }
 
-//getComments();
-
+/**
+ * Create new comment.
+ */
 function insertComment() {
     $time = current_time('mysql');
 
@@ -139,6 +146,9 @@ function insertComment() {
     wp_insert_comment($data);
 }
 
+/**
+ * Update comment.
+ */
 function updateComment() {
     $commentarr = array();
     $commentarr['comment_ID'] = 6;
@@ -147,6 +157,9 @@ function updateComment() {
     wp_update_comment($commentarr);
 }
 
+/**
+ * Get users by filter.
+ */
 function getUsers() {
 
     $args = array(
@@ -171,12 +184,11 @@ function getUsers() {
         'who' => ''
     );
     $u = get_users($args);
-
-    echo "<pre>";
-    print_r($u);
-    exit;
 }
 
+/**
+ * Update or Insert user.
+ */
 function editUser() {
 
     $website = "http://wordpress.local-updated";
@@ -190,7 +202,7 @@ function editUser() {
     $user_id = wp_insert_user($userdata);
     wp_update_user(array('ID' => $user_id, 'role' => 'editor'));
 
-    //On success
+    // On success
     if (is_wp_error($user_id)) {
         echo $return->get_error_message();
     } else {
@@ -198,14 +210,18 @@ function editUser() {
     }
 }
 
-function getUserProfile() {
+/**
+ * Get user profile.
+ * @param type $user_id
+ */
+function getUserProfile($user_id) {
 
-    $all_meta_for_user = get_user_meta(1);
-    echo "<pre>";
-    print_r($all_meta_for_user);
-    exit;
+    $all_meta_for_user = get_user_meta($user_id);
 }
 
+/**
+ * Filtering date dropdown of Posts page.
+ */
 function modifyDateDropdown() {
 
     $screen = get_current_screen();
@@ -225,6 +241,11 @@ function modifyDateDropdown() {
 
 add_action('admin_head', 'modifyDateDropdown');
 
+/**
+ * Get date list by posts.
+ * @global type $wpdb
+ * @return type
+ */
 function getDateDropdown() {
 
     global $wpdb;
@@ -234,10 +255,3 @@ function getDateDropdown() {
                     . ""));
     return $months;
 }
-error_reporting(E_ALL);
-ini_set("display_errors", "On");
-
-
-echo "<pre>";
-print_r(get_pages());
-exit;
