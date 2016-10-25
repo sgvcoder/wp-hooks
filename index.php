@@ -79,7 +79,7 @@ add_filter('http_request_args', function ( $response, $url ) {
 /**
  * Get comments using filter.
  */
-function getComments() {
+function getComments($number = 20, $offset = 0) {
 
     $args = array(
         'author_email' => '',
@@ -91,8 +91,8 @@ function getComments() {
         'comment__in' => '',
         'comment__not_in' => '',
         'karma' => '',
-        'number' => '',
-        'offset' => '',
+        'number' => $number,
+        'offset' => $offset,
         'orderby' => '',
         'order' => 'DESC',
         'parent' => '',
@@ -119,13 +119,14 @@ function getComments() {
         'meta_query' => '',
         'date_query' => null, // See WP_Date_Query
     );
-    $c = get_comments($args);
+
+    return get_comments($args);
 }
 
 /**
  * Create new comment.
  */
-function insertComment() {
+function insertComment($content) {
     $time = current_time('mysql');
 
     $data = array(
@@ -133,9 +134,9 @@ function insertComment() {
         'comment_author' => 'admin',
         'comment_author_email' => 'admin@admin.com',
         'comment_author_url' => 'http://',
-        'comment_content' => 'content here 2',
+        'comment_content' => $content,
         'comment_type' => '',
-        'comment_parent' => 3,
+        'comment_parent' => 0,
         'user_id' => 1,
         'comment_author_IP' => '127.0.0.1',
         'comment_agent' => 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.10) Gecko/2009042316 Firefox/3.0.10 (.NET CLR 3.5.30729)',
@@ -183,7 +184,8 @@ function getUsers() {
         'fields' => 'all',
         'who' => ''
     );
-    $u = get_users($args);
+    
+    return get_users($args);
 }
 
 /**
@@ -216,7 +218,7 @@ function editUser() {
  */
 function getUserProfile($user_id) {
 
-    $all_meta_for_user = get_user_meta($user_id);
+    return get_user_meta($user_id);
 }
 
 /**
