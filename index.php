@@ -332,30 +332,6 @@ function setThumbnail($post_id) {
     set_post_thumbnail($parent_post_id, $attach_id);
 }
 
-/**
- *
- * @param int $post_id
- * @param array $data
- */
-function setAttributes($post_id = null, $data = null) {
-
-    // Init temp data
-    $post_id = 476;
-    $data = array(
-        "location" => array(
-            "name" => "Location",
-            "value" => "AA | BB | CC | DD",
-            "position" => 0,
-            "is_visible" => 1,
-            "is_variation" => 1,
-            "is_taxonomy" => 0
-        )
-    );
-
-    // Now update the post with its new attributes
-    update_post_meta($post_id, '_product_attributes', $data);
-}
-
 ####################################################
 # WooCommerce Zone
 ####################################################
@@ -429,4 +405,28 @@ function editWooProduct($post_id = null) {
     update_post_meta($post_id, '_product_image_gallery', '');
 
     return true;
+}
+
+/**
+ *
+ * @param int $post_id
+ * @param array $data
+ */
+function setProductAttributes($post_id = null, $data = null) {
+
+    // Init temp data
+    $post_id = 476;
+    $data = array(
+        "location" => array(
+            "name" => "Location",
+            "value" => "AA | BB | CC | DD",
+            "position" => 0,
+            "is_visible" => 1,
+            "is_variation" => 1,
+            "is_taxonomy" => 0
+        )
+    );
+
+    // Now update the post with its new attributes
+    update_post_meta($post_id, '_product_attributes', $data);
 }
