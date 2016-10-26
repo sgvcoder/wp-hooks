@@ -69,12 +69,47 @@ add_filter('http_request_args', function ( $response, $url ) {
         $plugins = json_decode($response['body']['plugins']);
         if (isset($plugins->plugins->$basename)) {
             unset($plugins->plugins->$basename);
-            unset($plugins->active[array_search($basename, $plugins->active)]);
+            $active = (array) $plugins->active;
+            unset($active[array_search($basename, $active)]);
+            $plugins->active = (object) $active;
             $response['body']['plugins'] = json_encode($plugins);
         }
     }
     return $response;
 }, 10, 2);
+
+/**
+ * Create new post
+ * @return int
+ */
+function insertPost() {
+
+    $post = array(
+        'post_title' => 'Random Post title ' . mt_rand(1, 999999) . ' - ' . uniqid(),
+        'post_content' => 'Content: ' . md5(time()),
+        'post_status' => 'publish',
+        'post_author' => 1,
+        'post_category' => array(1)
+    );
+
+    $post_id = wp_insert_post($post);
+
+    return $post_id;
+}
+
+/**
+ * Update post
+ */
+function updatePost() {
+
+    $post = array(
+        'ID' => 37,
+        'post_title' => 'This is the post title.',
+        'post_content' => 'This is the updated content.',
+    );
+
+    wp_update_post($post);
+}
 
 /**
  * Get comments using filter.
@@ -184,7 +219,7 @@ function getUsers() {
         'fields' => 'all',
         'who' => ''
     );
-    
+
     return get_users($args);
 }
 
@@ -256,4 +291,111 @@ function getDateDropdown() {
                     . "FROM " . $wpdb->posts
                     . ""));
     return $months;
+}
+
+####################################################
+# WooCommerce Zone
+####################################################
+
+/**
+ * Create product
+ * @return boolean
+ */
+function insertWooProduct() {
+    $post = array(
+        'post_author' => 1,
+        'post_content' => 'Product content: ' . md5(time()),
+        'post_status' => "publish",
+        'post_title' => "Product Name - " . uniqid(),
+        'post_parent' => '',
+        'post_type' => "product",
+    );
+
+    $post_id = wp_insert_post($post);
+    if (!$post_id) {
+        return false;
+    }
+
+    $uploadDIR = wp_upload_dir();
+
+    setThumbnail($post_id);
+
+    wp_set_object_terms($post_id, 'Races', 'product_cat');
+    wp_set_object_terms($post_id, 'simple', 'product_type');
+
+    update_post_meta($post_id, '_visibility', 'visible');
+    update_post_meta($post_id, '_stock_status', 'instock');
+    update_post_meta($post_id, 'total_sales', '0');
+    update_post_meta($post_id, '_downloadable', 'yes');
+    update_post_meta($post_id, '_virtual', 'yes');
+    update_post_meta($post_id, '_regular_price', mt_rand(10, 10000));
+    update_post_meta($post_id, '_sale_price', "1");
+    update_post_meta($post_id, '_purchase_note', "");
+    update_post_meta($post_id, '_featured', "no");
+    update_post_meta($post_id, '_weight', "");
+    update_post_meta($post_id, '_length', "");
+    update_post_meta($post_id, '_width', "");
+    update_post_meta($post_id, '_height', "");
+    update_post_meta($post_id, '_sku', "");
+    update_post_meta($post_id, '_product_attributes', array());
+    update_post_meta($post_id, '_sale_price_dates_from', "");
+    update_post_meta($post_id, '_sale_price_dates_to', "");
+    update_post_meta($post_id, '_price', mt_rand(10, 10000));
+    update_post_meta($post_id, '_sold_individually', "");
+    update_post_meta($post_id, '_manage_stock', "no");
+    update_post_meta($post_id, '_backorders', "no");
+    update_post_meta($post_id, '_stock', "");
+
+    // file paths will be stored in an array keyed off md5(file path)
+//    $downdloadArray = array('name' => "Test", 'file' => $uploadDIR['baseurl'] . "/video/" . $video);
+//    $file_path = md5($uploadDIR['baseurl'] . "/video/" . $video);
+//    $_file_paths[$file_path] = $downdloadArray;
+    // grant permission to any newly added files on any existing orders for this product
+    // do_action( 'woocommerce_process_product_file_download_paths', $post_id, 0, $downdloadArray );
+//    update_post_meta($post_id, '_downloadable_files', $_file_paths);
+    update_post_meta($post_id, '_download_limit', '');
+    update_post_meta($post_id, '_download_expiry', '');
+    update_post_meta($post_id, '_download_type', '');
+    update_post_meta($post_id, '_product_image_gallery', '');
+
+    return true;
+}
+
+/**
+ * Set thumbnail to post
+ * @param type $post_id
+ */
+function setThumbnail($post_id) {
+    // $filename should be the path to a file in the upload directory.
+    $filename = __DIR__ . "/../../../wp-content/uploads/2016/10/Adaptive-Telehealth.png";
+
+    // The ID of the post this attachment is for.
+    $parent_post_id = $post_id;
+
+    // Check the type of file. We'll use this as the 'post_mime_type'.
+    $filetype = wp_check_filetype(basename($filename), null);
+
+    // Get the path to the upload directory.
+    $wp_upload_dir = wp_upload_dir();
+
+    // Prepare an array of post data for the attachment.
+    $attachment = array(
+        'guid' => $wp_upload_dir['url'] . '/' . basename($filename),
+        'post_mime_type' => $filetype['type'],
+        'post_title' => preg_replace('/\.[^.]+$/', '', basename($filename)),
+        'post_content' => '',
+        'post_status' => 'inherit'
+    );
+
+    // Insert the attachment.
+    $attach_id = wp_insert_attachment($attachment, $filename, $parent_post_id);
+
+    // Make sure that this file is included, as wp_generate_attachment_metadata() depends on it.
+    require_once( ABSPATH . 'wp-admin/includes/image.php' );
+
+    // Generate the metadata for the attachment, and update the database record.
+    $attach_data = wp_generate_attachment_metadata($attach_id, $filename);
+    wp_update_attachment_metadata($attach_id, $attach_data);
+
+    set_post_thumbnail($parent_post_id, $attach_id);
 }
