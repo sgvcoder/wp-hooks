@@ -1,14 +1,4 @@
 <?php
-/**
-* @category   FlowExcel
-* @package    FlowExcel
-* @author     UkrSolution
-* @copyright  Copyright (c) 2015 - UkrSolution
-* @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
-* @version    1.0.0
-**/
-
-
 class FlowExcel
 {
 	private $create = false;
