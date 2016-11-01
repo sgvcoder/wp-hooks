@@ -332,6 +332,42 @@ function setThumbnail($post_id) {
     set_post_thumbnail($parent_post_id, $attach_id);
 }
 
+/**
+ * Create the category
+ */
+function insertCategory() {
+
+    $r = uniqid();
+    $category = array(
+        'cat_name' => 'Category ' . $r,
+        'category_description' => 'Category description ' . $r,
+        'category_nicename' => 'category-slug',
+        'category_parent' => ''
+    );
+
+    $category_id = wp_insert_category($category);
+}
+
+/**
+ * Get categories
+ * @return type
+ */
+function getCategories() {
+    $args = array(
+        'orderby' => 'id',
+        'hide_empty' => 0
+    );
+
+    return get_categories($args);
+}
+
+//function test() {
+//    for ($i = 0; $i < 100; $i++) {
+//        insertCategory();
+//    }
+//}
+//
+//add_action('admin_init', 'test');
 ####################################################
 # WooCommerce Zone
 ####################################################
