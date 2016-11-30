@@ -473,7 +473,7 @@ function setProductAttributes($post_id = null, $data = null) {
 
 $p404_table_name = $wpdb->prefix . "p404_urls";
 
-function wpd_do_stuff_on_404() {
+function p404_on_404() {
 
     global $wp;
     global $wpdb;
@@ -481,9 +481,9 @@ function wpd_do_stuff_on_404() {
 
     if (is_404()) {
 
-        $url = add_query_arg($wp->query_string, '', home_url($wp->request));        
+        $url = add_query_arg($wp->query_string, '', home_url($wp->request));
 
-        $dburl = $wpdb->get_row("SELECT * FROM $table_name WHERE url = '$url'", ARRAY_A);
+        $dburl = $wpdb->get_row("SELECT * FROM $p404_table_name WHERE url = '$url'", ARRAY_A);
 
         if ($dburl && !empty($dburl["redirect_to"])) {
 
@@ -501,7 +501,7 @@ function wpd_do_stuff_on_404() {
     }
 }
 
-add_action('template_redirect', 'wpd_do_stuff_on_404');
+add_action('template_redirect', 'p404_on_404');
 
 function p404_menu() {
     add_menu_page('404', '404', 'manage_options', 'p404-index', 'p404_index', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEX///8AAABVwtN+AAA==');
@@ -511,7 +511,19 @@ function p404_menu() {
 add_action('admin_menu', 'p404_menu');
 
 function p404_index() {
-    
+
+    $data = p404_getData();
+    require_once "view.php";
+}
+
+function p404_getData() {
+
+    global $wpdb;
+    global $p404_table_name;
+
+    $data = $wpdb->get_results("SELECT * FROM $p404_table_name", ARRAY_A);
+
+    return $data;
 }
 
 function p404_init() {
