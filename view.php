@@ -7,28 +7,39 @@
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
+<style>
+    .p404-urls-list td{
+        word-break: break-all;
+    }
+</style>
+
 <div class="container-fluid">
     <div class="row">
         <div class="col-lg-12">
 
-            <table class="table table-hover">
+            <table class="table table-hover p404-urls-list">
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>URL</th>
-                        <th>Redirect to</th>
-                        <th>Views</th>
-                        <th>Added at</th>
+                        <th width="35%">URL</th>
+                        <th width="35%">Redirect to</th>
+                        <th class="text-center" width="80">Views</th>
+                        <th width="150">Added at</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($data as $value): ?>
                         <tr>
-                            <th scope="row"><?php $value["id"] ?></th>
-                            <td><?php $value["url"] ?></td>
-                            <td><?php $value["redirect_to"] ?></td>
-                            <td><?php $value["total_view"] ?></td>
-                            <td><?php $value["added"] ?></td>
+                            <th scope="row"><?php echo $value["id"] ?></th>
+                            <td><?php echo $value["url"] ?></td>
+                            <td><?php echo $value["redirect_to"] ?></td>
+                            <td class="text-center"><?php echo $value["total_view"] ?></td>
+                            <td>
+                                <?php
+                                $dt = new DateTime($value["added"]);
+                                echo $dt->format("g:ia m/d/Y");
+                                ?>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
