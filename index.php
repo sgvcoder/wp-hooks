@@ -548,3 +548,27 @@ function p404_init() {
 
 add_action('plugins_loaded', 'p404_init');
 
+function p404_redirect_to_save() {
+
+    global $wp;
+    global $wpdb;
+    global $p404_table_name;
+
+    $id = intval($_POST["id"]);
+    $url = strval($_POST["url"]);
+
+    $url = strip_tags($url);
+    $url = trim($url);
+
+    // update data
+    $wpdb->update($p404_table_name, array('redirect_to' => $url), array('id' => $id));
+
+    echo json_encode(array(
+        "success" => true
+    ));
+
+    wp_die();
+}
+
+add_action('wp_ajax_p404_redirect_to_save', 'p404_redirect_to_save');
+

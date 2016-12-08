@@ -52,7 +52,7 @@
         outline: 1px solid #5b9dd9;
     }
     .wwww{
-        position: fixed;
+        /*position: fixed;*/
         top: 0;
         left: 0;
         z-index: 99999;
@@ -70,7 +70,7 @@
                 <table class="table table-hover p404-urls-list">
                     <thead>
                         <tr>
-                            <th>#</th>
+                            <th width="30">#</th>
                             <th width="35%">URL</th>
                             <th width="35%">Redirect to</th>
                             <th class="text-center" width="80">Views</th>
@@ -86,7 +86,7 @@
                                     <div class="p404-box-redirect-to">
                                         <div class="p404-redirect-to-url"><?php echo $value["redirect_to"] ?></div>
                                         <a href="#" class="p404-redirect-to-edit">edit</a>
-                                        <a href="#" class="p404-redirect-to-apply hidden">apply</a>
+                                        <a href="#" class="p404-redirect-to-apply hidden" data-url-id="<?php echo $value["id"] ?>">apply</a>
                                     </div>
                                 </td>
                                 <td class="text-center"><?php echo $value["total_view"] ?></td>
@@ -106,7 +106,7 @@
 </div>
 
 <script>
-    jQuery(".p404-redirect-to-edit").off("click").click(function(e){
+    jQuery(".p404-redirect-to-edit").off("click").click(function (e) {
 
         e.preventDefault();
 
@@ -115,13 +115,19 @@
 
         jQuery(this).parents("tr").find(".p404-redirect-to-url").attr({
             contenteditable: true
-        }).keyup(function(){
-            console.log(jQuery(this).text());
+        }).keyup(function () {
+
+            if (p404_validURL(jQuery(this).text().trim())) {
+                jQuery(this).addClass("p404-danger");
+            } else {
+                jQuery(this).removeClass("p404-danger");
+            }
+
         }).click();
 
     });
 
-    jQuery(".p404-redirect-to-apply").off("click").click(function(e){
+    jQuery(".p404-redirect-to-apply").off("click").click(function (e) {
 
         e.preventDefault();
 
@@ -132,5 +138,26 @@
             contenteditable: false
         });
 
+        var data = {
+            action: "p404_redirect_to_save",
+            id: jQuery(this).attr("data-url-id"),
+            url: jQuery(this).parents("tr").find(".p404-redirect-to-url").text().trim()
+
+        };
+        jQuery.post(ajaxurl, data, function (response) {
+            console.log(response);
+        });
+
     });
+
+    function p404_validURL(str) {
+
+        var pattern = new RegExp("^|[\s.:;?\-\]<\(])(https?://[-\w;/?:@&=+$\|\_.!~*\|'()\[\]%#,☺]+[\w/#](\(\))?)(?=$|[\s',\|\(\).:;?\-\[\]>\)]", "i");
+
+        if (!pattern.test(str)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 </script>
