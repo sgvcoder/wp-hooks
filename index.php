@@ -369,206 +369,85 @@ function getCategories() {
 //
 //add_action('admin_init', 'test');
 ####################################################
-# WooCommerce Zone
+# WooCommerce
 ####################################################
 
-/**
- * Create product
- * @return boolean
- */
-function editWooProduct($post_id = null) {
+require_once __DIR__ . '/wooc.php';
 
-    $post = array(
-        'post_author' => 1,
-        'post_content' => 'Updated Product content: ' . md5(time()),
-        'post_status' => "publish",
-        'post_title' => "Updated Product Name - " . uniqid(),
-        'post_parent' => '',
-        'post_type' => "product",
-    );
-
-    if ($post_id) {
-        $post["ID"] = $post_id;
-        wp_update_post($post);
-    } else {
-        $post_id = wp_insert_post($post);
-    }
-
-    if (!$post_id) {
-        return false;
-    }
-
-    $uploadDIR = wp_upload_dir();
-
-    setThumbnail($post_id);
-
-    wp_set_object_terms($post_id, 'Races', 'product_cat');
-    wp_set_object_terms($post_id, 'simple', 'product_type');
-
-    update_post_meta($post_id, '_visibility', 'visible');
-    update_post_meta($post_id, '_stock_status', 'instock');
-    update_post_meta($post_id, 'total_sales', '0');
-    update_post_meta($post_id, '_downloadable', 'yes');
-    update_post_meta($post_id, '_virtual', 'yes');
-    update_post_meta($post_id, '_regular_price', 777);
-    update_post_meta($post_id, '_sale_price', "1");
-    update_post_meta($post_id, '_purchase_note', "");
-    update_post_meta($post_id, '_featured', "no");
-    update_post_meta($post_id, '_weight', "");
-    update_post_meta($post_id, '_length', "");
-    update_post_meta($post_id, '_width', "");
-    update_post_meta($post_id, '_height', "");
-    update_post_meta($post_id, '_sku', "");
-    update_post_meta($post_id, '_product_attributes', array());
-    update_post_meta($post_id, '_sale_price_dates_from', "");
-    update_post_meta($post_id, '_sale_price_dates_to', "");
-    update_post_meta($post_id, '_price', 888);
-    update_post_meta($post_id, '_sold_individually', "");
-    update_post_meta($post_id, '_manage_stock', "no");
-    update_post_meta($post_id, '_backorders', "no");
-    update_post_meta($post_id, '_stock', "");
-
-    // file paths will be stored in an array keyed off md5(file path)
-//    $downdloadArray = array('name' => "Test", 'file' => $uploadDIR['baseurl'] . "/video/" . $video);
-//    $file_path = md5($uploadDIR['baseurl'] . "/video/" . $video);
-//    $_file_paths[$file_path] = $downdloadArray;
-    // grant permission to any newly added files on any existing orders for this product
-    // do_action( 'woocommerce_process_product_file_download_paths', $post_id, 0, $downdloadArray );
-//    update_post_meta($post_id, '_downloadable_files', $_file_paths);
-    update_post_meta($post_id, '_download_limit', '');
-    update_post_meta($post_id, '_download_expiry', '');
-    update_post_meta($post_id, '_download_type', '');
-    update_post_meta($post_id, '_product_image_gallery', '');
-
-    return true;
-}
-
-/**
- *
- * @param int $post_id
- * @param array $data
- */
-function setProductAttributes($post_id = null, $data = null) {
-
-    // Init temp data
-    $post_id = 476;
-    $data = array(
-        "location" => array(
-            "name" => "Location",
-            "value" => "AA | BB | CC | DD",
-            "position" => 0,
-            "is_visible" => 1,
-            "is_variation" => 1,
-            "is_taxonomy" => 0
-        )
-    );
-
-    // Now update the post with its new attributes
-    update_post_meta($post_id, '_product_attributes', $data);
-}
 
 ####################################################
 # 404 pages
 ####################################################
 
-$p404_table_name = $wpdb->prefix . "p404_urls";
+require_once __DIR__ . '/p404.php';
 
-function p404_on_404() {
 
-    global $wp;
-    global $wpdb;
-    global $p404_table_name;
+/**
+* Add The Meta Box
+**/
+function layers_child_add_meta_box() {
 
-    if (is_404()) {
+    add_meta_box(
+            'smashing-post-class', // Unique ID
+            esc_html__('Post Class', 'example'), // Title
+            'smashing_post_class_meta_box', // Callback function
+            'post', // Admin page (or post type)
+            'advanced', // Context (side)
+            'default'         // Priority
+    );
 
-        $url = add_query_arg($wp->query_string, '', home_url($wp->request));
-
-        $dburl = $wpdb->get_row("SELECT * FROM $p404_table_name WHERE url = '$url'", ARRAY_A);
-
-        if ($dburl && !empty($dburl["redirect_to"])) {
-
-            // redirect to new url
-            wp_redirect($dburl["redirect_to"], 301);
-        } elseif ($dburl) {
-
-            // update counter
-            $wpdb->update($p404_table_name, array('total_view' => ($dburl["total_view"] + 1)), array('id' => $dburl["id"]));
-        } else {
-
-            // save 404 url
-            $wpdb->insert($p404_table_name, array('url' => $url));
-        }
-    }
 }
 
-add_action('template_redirect', 'p404_on_404');
+function smashing_post_class_meta_box() { ?>
 
-function p404_menu() {
-    add_menu_page('404', '404', 'manage_options', 'p404-index', 'p404_index', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEX///8AAABVwtN+AAA==');
-//    add_submenu_page('wpbcu-barcode-generator', 'FAQ', 'FAQ', 'manage_options', 'wpbcu-barcode-generator-faq', 'wpbcu_barcode_generator_faq');
+    <?php wp_nonce_field( basename( __FILE__ ), 'smashing_post_class_nonce' ); ?>
+
+  <p>
+    <label for="smashing-post-class"><?php _e( "Add a custom CSS class, which will be applied to WordPress' post class.", 'example' ); ?></label>
+    <br />
+    <input class="widefat" type="text" name="smashing-post-class" id="smashing-post-class" value="<?php echo esc_attr( get_post_meta( $object->ID, 'smashing_post_class', true ) ); ?>" size="30" />
+  </p>
+<?php 
 }
 
-add_action('admin_menu', 'p404_menu');
+add_action( 'add_meta_boxes', 'layers_child_add_meta_box' );
 
-function p404_index() {
 
-    $data = p404_getData();
-    require_once "view.php";
+/**
+ * Testing rand function
+ */
+//for($i = 0; $i < 10; $i++) {
+//    echo wp_rand(0, 10). " ";
+//}
+//echo "<br>";
+//for($i = 0; $i < 10; $i++) {
+//    echo mt_rand(0, 10). " ";
+//}
+//
+//wp_die();
+
+//if($_SERVER["REMOTE_ADDR"] == "195.211.212.222"){
+//
+//}
+
+//
+//function add_actor_url()
+//{
+//    add_rewrite_rule(
+//        '^aaaa',
+//        'random-post-title-618131-58105f763cd08',
+//        'top'
+//    );
+//}
+//
+//add_action('init', 'add_actor_url');
+
+add_action('init', 'dcc_rewrite_rules');
+function dcc_rewrite_rules() {
+    global $wp,$wp_rewrite;
+    add_rewrite_rule('^passfotos/?','index.php?page_id=662&p=662','top');
+    add_rewrite_rule('^portait-fotos/?','index.php?page_id=653&p=653','top');
+    add_rewrite_rule('^babybauch/?','index.php?page_id=660&p=660','top');
+    add_rewrite_rule('^baby/?','index.php?page_id=658&p=658','top');
+    $wp_rewrite->flush_rules( false );
 }
-
-function p404_getData() {
-
-    global $wpdb;
-    global $p404_table_name;
-
-    $data = $wpdb->get_results("SELECT * FROM $p404_table_name", ARRAY_A);
-
-    return $data;
-}
-
-function p404_init() {
-
-    global $wpdb;
-    global $p404_table_name;
-
-    $charset_collate = $wpdb->get_charset_collate();
-
-    $sql = "CREATE TABLE $p404_table_name (
-            `id` int(11) NOT NULL AUTO_INCREMENT,
-            `url` varchar(1024) COLLATE utf8mb4_unicode_520_ci NOT NULL,
-            `redirect_to` varchar(1024) COLLATE utf8mb4_unicode_520_ci DEFAULT NULL,
-            `total_view` int(11) NOT NULL DEFAULT '1',
-            `added` datetime DEFAULT CURRENT_TIMESTAMP,
-            PRIMARY KEY  (id)
-          ) $charset_collate;";
-
-    require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-    dbDelta($sql);
-}
-
-add_action('plugins_loaded', 'p404_init');
-
-function p404_redirect_to_save() {
-
-    global $wp;
-    global $wpdb;
-    global $p404_table_name;
-
-    $id = intval($_POST["id"]);
-    $url = strval($_POST["url"]);
-
-    $url = strip_tags($url);
-    $url = trim($url);
-
-    // update data
-    $wpdb->update($p404_table_name, array('redirect_to' => $url), array('id' => $id));
-
-    echo json_encode(array(
-        "success" => true
-    ));
-
-    wp_die();
-}
-
-add_action('wp_ajax_p404_redirect_to_save', 'p404_redirect_to_save');
-
