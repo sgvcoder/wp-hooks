@@ -97,16 +97,28 @@
                 <h4 class="modal-title">Redirect to:</h4>
             </div>
             <div class="modal-body">
-                <select class="form-control" name="p404-url-o-m-types" id="p404-url-o-m-types">
-                    <?php foreach ($pageTypes as $value): ?>
-                    <option value="<?php echo $value["alias"]; ?>"><?php echo $value["name"]; ?></option>
-                    <?php endforeach; ?>
-                </select>
-                <select class="form-control p404-url-o-m-l p404-url-o-m-l-pages" name="p404-url-o-m-link" id="p404-url-o-m-link">
-                    <?php foreach ($pages as $value): ?>
-                    <option value="<?php echo $value->guid; ?>"><?php echo $value->post_title; ?></option>
-                    <?php endforeach; ?>
-                </select>
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label" for="p404-url-o-m-types">Type:</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" name="p404-url-o-m-types" id="p404-url-o-m-types">
+                                <?php foreach ($pageTypes as $value): ?>
+                                    <option value="<?php echo $value["alias"]; ?>"><?php echo $value["name"]; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group p404-url-o-m-l p404-url-o-m-l-pages">
+                        <label class="col-sm-2 control-label" for="p404-url-o-m-link">Link to:</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" name="p404-url-o-m-link" id="p404-url-o-m-link">
+                                <?php foreach ($pages as $value): ?>
+                                    <option value="<?php echo $value->guid; ?>"><?php echo $value->post_title; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -207,8 +219,8 @@
         e.preventDefault();
 
         var typeSelected = jQuery(this).val();
-        jQuery("select.p404-url-o-m-l").addClass("hidden");
-        jQuery("select.p404-url-o-m-l-" + typeSelected).removeClass("hidden");
+        jQuery(".p404-url-o-m-l").addClass("hidden");
+        jQuery(".p404-url-o-m-l-" + typeSelected).removeClass("hidden");
 
     });
 
