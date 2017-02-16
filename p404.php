@@ -42,6 +42,9 @@ add_action('admin_menu', 'p404_menu');
 function p404_index() {
 
     $data = p404_getData();
+    $pages = p404_getPages();
+    $pageTypes = p404_getPageTypes();
+
     require_once "view.php";
 }
 
@@ -55,6 +58,22 @@ function p404_getData() {
     return $data;
 }
 
+function p404_getPages() {
+
+    $pages = get_pages();
+
+    return $pages;
+}
+
+function p404_getPageTypes() {
+
+    $types = array(
+        array("alias" => "pages", "name" => "Pages")
+    );
+
+    return $types;
+}
+
 function p404_init() {
 
     global $wpdb;
@@ -64,8 +83,8 @@ function p404_init() {
 
     $sql = "CREATE TABLE $p404_table_name (
             `id` int(11) NOT NULL AUTO_INCREMENT,
-            `url` varchar(1024) COLLATE utf8mb4_unicode_520_ci NOT NULL,
-            `redirect_to` varchar(1024) COLLATE utf8mb4_unicode_520_ci DEFAULT NULL,
+            `url` varchar(1024) COLLATE NOT NULL,
+            `redirect_to` varchar(1024) DEFAULT NULL,
             `total_view` int(11) NOT NULL DEFAULT '1',
             `added` datetime DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY  (id)
