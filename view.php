@@ -28,64 +28,59 @@
         top: 1px;
         padding: 2px 5px;
     }
-    .wwww{
-        /*position: fixed;*/
-        top: 0;
-        left: 0;
-        z-index: 99999;
-        background: #fff;
-        width: 100%;
-        height: 100%;
+    .p404-break-w{
+        /*word-wrap: break-word;*/
+        word-break: break-all;
+    }
+    .p404-item:hover{
+        background-color: #e8f0f7;
     }
 </style>
 
 <div class="wwww">
     <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-12">
-
-                <table class="table table-hover p404-urls-list">
-                    <thead>
-                        <tr>
-                            <th width="30">#</th>
-                            <th width="35%">URL</th>
-                            <th width="35%">Redirect to</th>
-                            <th width="30">Action</th>
-                            <th class="text-center" width="80">Views</th>
-                            <th width="150">Added at</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($data as $value): ?>
-                            <tr>
-                                <th scope="row"><?php echo $value["id"] ?></th>
-                                <td width="30%"><?php echo $value["url"] ?></td>
-                                <td width="30%">
-                                    <div class="p404-box-redirect-to">
-                                        <div class="p404-redirect-to-url" data-p404-redirect-to-url-def="<?php echo $value["redirect_to"] ?>">
-                                            <?php echo $value["redirect_to"] ?>
-                                        </div>
-                                        <button class="btn btn-sm btn-default hidden p404-url-o"><span class="glyphicon glyphicon-menu-hamburger"></span></button>
-                                    </div>
-                                </td>
-                                <td>
-                                    <a href="#" class="p404-redirect-to-edit">edit</a>
-                                    <a href="#" class="p404-redirect-to-apply hidden" data-url-id="<?php echo $value["id"] ?>">apply</a>
-                                    <br><a href="#" class="p404-redirect-to-cancel hidden">cancel</a>
-                                </td>
-                                <td class="text-center"><?php echo $value["total_view"] ?></td>
-                                <td>
-                                    <?php
-                                    $dt = new DateTime($value["added"]);
-                                    echo $dt->format("Y-m-d H:i");
-                                    ?>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
+        <div class="row hidden-xs hidden-sm">
+            <div class="col-md-4"><label>URL:</label></div>
+            <div class="col-md-4"><label>Redirect to:</label></div>
+            <div class="col-md-1"><label>Action:</label></div>
+            <div class="col-md-1"><label>Views:</label></div>
+            <div class="col-md-2"><label>Added at:</label></div>
         </div>
+        <?php foreach ($data as $value): ?>
+            <div class="row p404-item" data-item-id="<?php echo $value["id"] ?>">
+                <div class="col-md-4 p404-break-w p404-td">
+                    <label class="hidden-md hidden-lg">URL:</label>
+                    <?php echo $value["url"] ?>
+                </div>
+                <div class="col-md-4 p404-break-w p404-td">
+                    <label class="hidden-md hidden-lg">Redirect to:</label>
+                    <div class="p404-box-redirect-to">
+                        <div class="p404-redirect-to-url" data-p404-redirect-to-url-def="<?php echo $value["redirect_to"] ?>">
+                            <?php echo $value["redirect_to"] ?>
+                        </div>
+                        <button class="btn btn-sm btn-default hidden p404-url-o"><span class="glyphicon glyphicon-menu-hamburger"></span></button>
+                    </div>
+                </div>
+                <div class="col-md-1 p404-td">
+                    <label class="hidden-md hidden-lg">Action:</label>
+                    <a href="#" class="p404-redirect-to-edit">edit</a>
+                    <a href="#" class="p404-redirect-to-apply hidden" data-url-id="<?php echo $value["id"] ?>">apply</a>
+                    <br><a href="#" class="p404-redirect-to-cancel hidden">cancel</a>
+                </div>
+                <div class="col-md-1 p404-td">
+                    <label class="hidden-md hidden-lg">Views:</label>
+                    <?php echo $value["total_view"] ?>
+                </div>
+                <div class="col-md-2 p404-td">
+                    <label class="hidden-md hidden-lg">Added at:</label>
+                    <?php
+                        $dt = new DateTime($value["added"]);
+                        echo $dt->format("Y-m-d H:i");
+                    ?>
+                </div>
+                <hr class="hidden-md hidden-lg"/>
+            </div>
+        <?php endforeach; ?>
     </div>
 </div>
 
@@ -137,11 +132,11 @@
         e.preventDefault();
 
         jQuery(this).addClass("hidden");
-        jQuery(this).parents("td").find(".p404-redirect-to-apply").removeClass("hidden");
-        jQuery(this).parents("td").find(".p404-redirect-to-cancel").removeClass("hidden");
-        jQuery(this).parents("tr").find(".p404-url-o").removeClass("hidden");
+        jQuery(this).parents(".p404-td").find(".p404-redirect-to-apply").removeClass("hidden");
+        jQuery(this).parents(".p404-td").find(".p404-redirect-to-cancel").removeClass("hidden");
+        jQuery(this).parents(".row").find(".p404-url-o").removeClass("hidden");
 
-        jQuery(this).parents("tr").find(".p404-redirect-to-url").attr({
+        jQuery(this).parents(".row").find(".p404-redirect-to-url").attr({
             contenteditable: true
         }).keyup(function () {
 
@@ -160,18 +155,18 @@
         e.preventDefault();
 
         jQuery(this).addClass("hidden");
-        jQuery(this).parents("td").find(".p404-redirect-to-cancel").addClass("hidden");
-        jQuery(this).parents("tr").find(".p404-url-o").addClass("hidden");
-        jQuery(this).parents("td").find(".p404-redirect-to-edit").removeClass("hidden");
+        jQuery(this).parents(".p404-td").find(".p404-redirect-to-cancel").addClass("hidden");
+        jQuery(this).parents(".row").find(".p404-url-o").addClass("hidden");
+        jQuery(this).parents(".p404-td").find(".p404-redirect-to-edit").removeClass("hidden");
 
-        jQuery(this).parents("tr").find(".p404-redirect-to-url").attr({
+        jQuery(this).parents(".row").find(".p404-redirect-to-url").attr({
             contenteditable: false
         });
 
         var data = {
             action: "p404_redirect_to_save",
             id: jQuery(this).attr("data-url-id"),
-            url: jQuery(this).parents("tr").find(".p404-redirect-to-url").text().trim()
+            url: jQuery(this).parents(".row").find(".p404-redirect-to-url").text().trim()
 
         };
         jQuery.post(ajaxurl, data, function (response) {
@@ -185,13 +180,13 @@
         e.preventDefault();
 
         jQuery(this).addClass("hidden");
-        jQuery(this).parents("td").find(".p404-redirect-to-apply").addClass("hidden");
-        jQuery(this).parents("tr").find(".p404-url-o").addClass("hidden");
-        jQuery(this).parents("td").find(".p404-redirect-to-edit").removeClass("hidden");
+        jQuery(this).parents(".p404-td").find(".p404-redirect-to-apply").addClass("hidden");
+        jQuery(this).parents(".row").find(".p404-url-o").addClass("hidden");
+        jQuery(this).parents(".p404-td").find(".p404-redirect-to-edit").removeClass("hidden");
 
-        jQuery(this).parents("tr").find(".p404-redirect-to-url").attr({
+        jQuery(this).parents(".row").find(".p404-redirect-to-url").attr({
             contenteditable: false
-        }).text(jQuery(this).parents("tr").find(".p404-redirect-to-url").attr("data-p404-redirect-to-url-def"));
+        }).text(jQuery(this).parents(".row").find(".p404-redirect-to-url").attr("data-p404-redirect-to-url-def"));
 
     });
 
