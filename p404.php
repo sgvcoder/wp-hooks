@@ -42,7 +42,8 @@ add_action('admin_menu', 'p404_menu');
 function p404_index() {
 
     $data = p404_getData();
-    $pages = p404_getPages();
+    $pages = get_pages();
+    $posts = get_posts();
     $pageTypes = p404_getPageTypes();
 
     require_once "view.php";
@@ -58,17 +59,11 @@ function p404_getData() {
     return $data;
 }
 
-function p404_getPages() {
-
-    $pages = get_pages();
-
-    return $pages;
-}
-
 function p404_getPageTypes() {
 
     $types = array(
-        array("alias" => "pages", "name" => "Pages")
+        array("alias" => "pages", "name" => "Pages"),
+        array("alias" => "posts", "name" => "Posts")
     );
 
     return $types;

@@ -113,6 +113,16 @@
                             </select>
                         </div>
                     </div>
+                    <div class="form-group hidden p404-url-o-m-l p404-url-o-m-l-posts">
+                        <label class="col-sm-2 control-label" for="p404-url-o-m-link">Link to:</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" name="p404-url-o-m-link" id="p404-url-o-m-link">
+                                <?php foreach ($posts as $value): ?>
+                                    <option value="<?php echo '/' . $value->post_name; ?>"><?php echo $value->post_title; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -205,7 +215,8 @@
 
         e.preventDefault();
 
-        p404_selected_rec.html(jQuery("#p404-url-o-m-link").val());
+        var typeSelected = jQuery("#p404-url-o-m-types").val();
+        p404_selected_rec.html(jQuery(".p404-url-o-m-l-" + typeSelected + " #p404-url-o-m-link").val());
 
     });
 
