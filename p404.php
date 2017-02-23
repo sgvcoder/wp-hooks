@@ -154,3 +154,37 @@ function p404_show_page() {
 }
 
 add_action('wp_ajax_p404_show_page', 'p404_show_page');
+
+function p404_admin_bar_render($wp_admin_bar) {
+
+    global $wp_admin_bar;
+    global $limit;
+
+    $result = p404_getData(array("page" => 1, "limit" => 99999, "without_redirect" => 1));
+    $count = count($result["items"]);
+
+    $args = array(
+        'id' => 'p404_without_redirect',
+        'href' => admin_url('/admin.php?page=p404-index', 'http'),
+        // 'parent' => 'top-secondary'
+    );
+
+    if ($count == 1) {
+        $title = ' error page';
+    } else {
+        $title = ' error pages';
+    }
+
+    $args['meta']['title'] = $title;
+
+    if ($count == 0) {
+        $display = '<span class="p404_without_redirect_text">0 ' . $title . '</span>';
+    } else {
+        $display = '<span class="p404_without_redirect_text_active">' . $count . '</span><span>' . $title . '</span>';
+    }
+
+    $args['title'] = $display;
+    $wp_admin_bar->add_node($args);
+}
+
+add_action('wp_before_admin_bar_render', 'p404_admin_bar_render', 999);
