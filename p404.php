@@ -1,7 +1,7 @@
 <?php
 
 $p404_table_name = $wpdb->prefix . "p404_urls";
-$limit = 3;
+$limit = 20;
 
 function p404_on_404() {
 
@@ -34,8 +34,15 @@ function p404_on_404() {
 add_action('template_redirect', 'p404_on_404');
 
 function p404_menu() {
-    add_menu_page('404', '404', 'manage_options', 'p404-index', 'p404_index', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEX///8AAABVwtN+AAA==');
-//    add_submenu_page('wpbcu-barcode-generator', 'FAQ', 'FAQ', 'manage_options', 'wpbcu-barcode-generator-faq', 'wpbcu_barcode_generator_faq');
+
+    global $limit;
+
+    $result = p404_getData(array("page" => 1, "limit" => 99999, "without_redirect" => 1));
+    $count = count($result["items"]);
+
+    $menu_label = sprintf( __( '404 %s' ), "<span class='update-plugins count-" . $count . "' title='" . $count . "'><span class='update-count'>" . $count . "</span></span>" );
+    add_menu_page('404', $menu_label, 'manage_options', 'p404-index', 'p404_index', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEX///8AAABVwtN+AAA==');
+    // add_submenu_page('wpbcu-barcode-generator', 'FAQ', 'FAQ', 'manage_options', 'wpbcu-barcode-generator-faq', 'wpbcu_barcode_generator_faq');
 }
 
 add_action('admin_menu', 'p404_menu');
@@ -59,10 +66,12 @@ function p404_getData($filter) {
     global $wpdb;
     global $p404_table_name;
 
+    $where = "";
     $limit = $filter["limit"];
     $offset = (isset($filter["page"])) ? ($filter["page"] - 1) * $limit : 0;
+    $where .= (isset($filter["without_redirect"])) ? " AND TRIM(redirect_to) = '' " : "";
 
-    $data = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM $p404_table_name ORDER BY `id` DESC LIMIT $offset, $limit", ARRAY_A);
+    $data = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM $p404_table_name WHERE 1=1 $where ORDER BY `id` DESC LIMIT $offset, $limit", ARRAY_A);
     $foundRows = $wpdb->get_results("SELECT FOUND_ROWS() AS 'FOUND_ROWS';", ARRAY_A);
 
     return array("items" => $data, "foundRows" => $foundRows);

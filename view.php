@@ -57,11 +57,16 @@
     </div>
 
     <?php if($foundRows > $limit): ?>
-        <div class="row p404-pagination">
-            <?php for($i = 0; $i < ceil($foundRows / $limit); $i++): ?>
-            <a href="#" class="p404-page" data-page-id="<?php echo ($i + 1) ?>"><?php echo ($i + 1) ?></a> &nbsp;
-            <?php endfor; ?>
-        </div>
+        <nav aria-label="Paging">
+            <ul class="pagination p404-pagination">
+               
+                <?php for($i = 0; $i < ceil($foundRows / $limit); $i++): ?>
+                <?php $active = ($i == 0) ? "active" : ""; ?>
+                <li class="<?php echo $active; ?>"><a href="#" class="p404-page" data-page-id="<?php echo ($i + 1) ?>"><?php echo ($i + 1) ?></a></li>
+                <?php endfor; ?>
+               
+            </ul>
+        </nav>
     <?php endif; ?>
 
 </div>
@@ -124,6 +129,9 @@
     jQuery(".p404-pagination .p404-page").off("click").click(function (e) {
 
         e.preventDefault();
+
+        jQuery(".p404-pagination li").removeClass("active");
+        jQuery(this).parents("li").addClass("active");
 
         var data = {
             action: "p404_show_page",
