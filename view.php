@@ -37,7 +37,12 @@
     }
 </style>
 
-<div class="wwww">
+<div>
+
+    <div class="row">
+        <?php // print_r($foundRows);  ?>
+    </div>
+
     <div class="container-fluid">
         <div class="row hidden-xs hidden-sm">
             <div class="col-md-4"><label>URL:</label></div>
@@ -46,42 +51,19 @@
             <div class="col-md-1"><label>Views:</label></div>
             <div class="col-md-2"><label>Added at:</label></div>
         </div>
-        <?php foreach ($data as $value): ?>
-            <div class="row p404-item" data-item-id="<?php echo $value["id"] ?>">
-                <div class="col-md-4 p404-break-w p404-td">
-                    <label class="hidden-md hidden-lg">URL:</label>
-                    <?php echo $value["url"] ?>
-                </div>
-                <div class="col-md-4 p404-break-w p404-td">
-                    <label class="hidden-md hidden-lg">Redirect to:</label>
-                    <div class="p404-box-redirect-to">
-                        <div class="p404-redirect-to-url" data-p404-redirect-to-url-def="<?php echo $value["redirect_to"] ?>">
-                            <?php echo $value["redirect_to"] ?>
-                        </div>
-                        <button class="btn btn-sm btn-default hidden p404-url-o"><span class="glyphicon glyphicon-menu-hamburger"></span></button>
-                    </div>
-                </div>
-                <div class="col-md-1 p404-td">
-                    <label class="hidden-md hidden-lg">Action:</label>
-                    <a href="#" class="p404-redirect-to-edit">edit</a>
-                    <a href="#" class="p404-redirect-to-apply hidden" data-url-id="<?php echo $value["id"] ?>">apply</a>
-                    <br><a href="#" class="p404-redirect-to-cancel hidden">cancel</a>
-                </div>
-                <div class="col-md-1 p404-td">
-                    <label class="hidden-md hidden-lg">Views:</label>
-                    <?php echo $value["total_view"] ?>
-                </div>
-                <div class="col-md-2 p404-td">
-                    <label class="hidden-md hidden-lg">Added at:</label>
-                    <?php
-                        $dt = new DateTime($value["added"]);
-                        echo $dt->format("Y-m-d H:i");
-                    ?>
-                </div>
-                <hr class="hidden-md hidden-lg"/>
-            </div>
-        <?php endforeach; ?>
+        <div id="p404-data-table">
+            <?php require_once "datatable.php"; ?>
+        </div>
     </div>
+
+    <?php if($foundRows > $limit): ?>
+        <div class="row p404-pagination">
+            <?php for($i = 0; $i < ceil($foundRows / $limit); $i++): ?>
+            <a href="#" class="p404-page" data-page-id="<?php echo ($i + 1) ?>"><?php echo ($i + 1) ?></a> &nbsp;
+            <?php endfor; ?>
+        </div>
+    <?php endif; ?>
+
 </div>
 
 <div class="modal fade" tabindex="-1" role="dialog" id="p404-url-o-m">
@@ -137,98 +119,125 @@
 
     var p404_selected_rec = null;
 
-    jQuery(".p404-redirect-to-edit").off("click").click(function (e) {
+    p404_init();
+
+    jQuery(".p404-pagination .p404-page").off("click").click(function (e) {
 
         e.preventDefault();
-
-        jQuery(this).addClass("hidden");
-        jQuery(this).parents(".p404-td").find(".p404-redirect-to-apply").removeClass("hidden");
-        jQuery(this).parents(".p404-td").find(".p404-redirect-to-cancel").removeClass("hidden");
-        jQuery(this).parents(".row").find(".p404-url-o").removeClass("hidden");
-
-        jQuery(this).parents(".row").find(".p404-redirect-to-url").attr({
-            contenteditable: true
-        }).keyup(function () {
-
-            if (p404_validURL(jQuery(this).text().trim())) {
-                jQuery(this).addClass("p404-danger");
-            } else {
-                jQuery(this).removeClass("p404-danger");
-            }
-
-        }).click();
-
-    });
-
-    jQuery(".p404-redirect-to-apply").off("click").click(function (e) {
-
-        e.preventDefault();
-
-        jQuery(this).addClass("hidden");
-        jQuery(this).parents(".p404-td").find(".p404-redirect-to-cancel").addClass("hidden");
-        jQuery(this).parents(".row").find(".p404-url-o").addClass("hidden");
-        jQuery(this).parents(".p404-td").find(".p404-redirect-to-edit").removeClass("hidden");
-
-        jQuery(this).parents(".row").find(".p404-redirect-to-url").attr({
-            contenteditable: false
-        });
 
         var data = {
-            action: "p404_redirect_to_save",
-            id: jQuery(this).attr("data-url-id"),
-            url: jQuery(this).parents(".row").find(".p404-redirect-to-url").text().trim()
+            action: "p404_show_page",
+            id: jQuery(this).attr("data-page-id")
 
         };
         jQuery.post(ajaxurl, data, function (response) {
-            console.log(response);
+
+            var json = JSON.parse(response);
+            
+            if(json.html) {
+
+                jQuery("#p404-data-table").html(json.html);
+                p404_init();
+            }
         });
 
     });
 
-    jQuery(".p404-redirect-to-cancel").off("click").click(function (e) {
+    function p404_init() {
 
-        e.preventDefault();
+        jQuery(".p404-redirect-to-edit").off("click").click(function (e) {
 
-        jQuery(this).addClass("hidden");
-        jQuery(this).parents(".p404-td").find(".p404-redirect-to-apply").addClass("hidden");
-        jQuery(this).parents(".row").find(".p404-url-o").addClass("hidden");
-        jQuery(this).parents(".p404-td").find(".p404-redirect-to-edit").removeClass("hidden");
+            e.preventDefault();
 
-        jQuery(this).parents(".row").find(".p404-redirect-to-url").attr({
-            contenteditable: false
-        }).text(jQuery(this).parents(".row").find(".p404-redirect-to-url").attr("data-p404-redirect-to-url-def"));
+            jQuery(this).addClass("hidden");
+            jQuery(this).parents(".p404-td").find(".p404-redirect-to-apply").removeClass("hidden");
+            jQuery(this).parents(".p404-td").find(".p404-redirect-to-cancel").removeClass("hidden");
+            jQuery(this).parents(".row").find(".p404-url-o").removeClass("hidden");
 
-    });
+            jQuery(this).parents(".row").find(".p404-redirect-to-url").attr({
+                contenteditable: true
+            }).keyup(function () {
 
-    jQuery(".p404-url-o").off("click").click(function (e) {
+                if (p404_validURL(jQuery(this).text().trim())) {
+                    jQuery(this).addClass("p404-danger");
+                } else {
+                    jQuery(this).removeClass("p404-danger");
+                }
 
-        e.preventDefault();
+            }).click();
 
-        jQuery("#p404-url-o-m").modal("show");
-        jQuery("#p404-url-o-m-apply");
+        });
 
-        p404_selected_rec = jQuery(this).parents(".p404-box-redirect-to").find(".p404-redirect-to-url");
+        jQuery(".p404-redirect-to-apply").off("click").click(function (e) {
 
-    });
+            e.preventDefault();
 
-    jQuery("#p404-url-o-m-apply").off("click").click(function (e) {
+            jQuery(this).addClass("hidden");
+            jQuery(this).parents(".p404-td").find(".p404-redirect-to-cancel").addClass("hidden");
+            jQuery(this).parents(".row").find(".p404-url-o").addClass("hidden");
+            jQuery(this).parents(".p404-td").find(".p404-redirect-to-edit").removeClass("hidden");
 
-        e.preventDefault();
+            jQuery(this).parents(".row").find(".p404-redirect-to-url").attr({
+                contenteditable: false
+            });
 
-        var typeSelected = jQuery("#p404-url-o-m-types").val();
-        p404_selected_rec.html(jQuery(".p404-url-o-m-l-" + typeSelected + " #p404-url-o-m-link").val());
+            var data = {
+                action: "p404_redirect_to_save",
+                id: jQuery(this).attr("data-url-id"),
+                url: jQuery(this).parents(".row").find(".p404-redirect-to-url").text().trim()
 
-    });
+            };
+            jQuery.post(ajaxurl, data, function (response) {
+                console.log(response);
+            });
 
-    jQuery("#p404-url-o-m-types").off("change").change(function (e) {
+        });
 
-        e.preventDefault();
+        jQuery(".p404-redirect-to-cancel").off("click").click(function (e) {
 
-        var typeSelected = jQuery(this).val();
-        jQuery(".p404-url-o-m-l").addClass("hidden");
-        jQuery(".p404-url-o-m-l-" + typeSelected).removeClass("hidden");
+            e.preventDefault();
 
-    });
+            jQuery(this).addClass("hidden");
+            jQuery(this).parents(".p404-td").find(".p404-redirect-to-apply").addClass("hidden");
+            jQuery(this).parents(".row").find(".p404-url-o").addClass("hidden");
+            jQuery(this).parents(".p404-td").find(".p404-redirect-to-edit").removeClass("hidden");
+
+            jQuery(this).parents(".row").find(".p404-redirect-to-url").attr({
+                contenteditable: false
+            }).text(jQuery(this).parents(".row").find(".p404-redirect-to-url").attr("data-p404-redirect-to-url-def"));
+
+        });
+
+        jQuery(".p404-url-o").off("click").click(function (e) {
+
+            e.preventDefault();
+
+            jQuery("#p404-url-o-m").modal("show");
+            jQuery("#p404-url-o-m-apply");
+
+            p404_selected_rec = jQuery(this).parents(".p404-box-redirect-to").find(".p404-redirect-to-url");
+
+        });
+
+        jQuery("#p404-url-o-m-apply").off("click").click(function (e) {
+
+            e.preventDefault();
+
+            var typeSelected = jQuery("#p404-url-o-m-types").val();
+            p404_selected_rec.html(jQuery(".p404-url-o-m-l-" + typeSelected + " #p404-url-o-m-link").val());
+
+        });
+
+        jQuery("#p404-url-o-m-types").off("change").change(function (e) {
+
+            e.preventDefault();
+
+            var typeSelected = jQuery(this).val();
+            jQuery(".p404-url-o-m-l").addClass("hidden");
+            jQuery(".p404-url-o-m-l-" + typeSelected).removeClass("hidden");
+
+        });
+    }
 
     function p404_validURL(str) {
 

@@ -1,6 +1,7 @@
 <?php
 
 $p404_table_name = $wpdb->prefix . "p404_urls";
+$limit = 3;
 
 function p404_on_404() {
 
@@ -41,7 +42,11 @@ add_action('admin_menu', 'p404_menu');
 
 function p404_index() {
 
-    $data = p404_getData();
+    global $limit;
+
+    $result = p404_getData(array("page" => 1, "limit" => $limit));
+    $data = $result["items"];
+    $foundRows = $result["foundRows"][0]["FOUND_ROWS"];
     $pages = get_pages();
     $posts = get_posts();
     $pageTypes = p404_getPageTypes();
@@ -49,14 +54,18 @@ function p404_index() {
     require_once "view.php";
 }
 
-function p404_getData() {
+function p404_getData($filter) {
 
     global $wpdb;
     global $p404_table_name;
 
-    $data = $wpdb->get_results("SELECT * FROM $p404_table_name", ARRAY_A);
+    $limit = $filter["limit"];
+    $offset = (isset($filter["page"])) ? ($filter["page"] - 1) * $limit : 0;
 
-    return $data;
+    $data = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM $p404_table_name ORDER BY `id` DESC LIMIT $offset, $limit", ARRAY_A);
+    $foundRows = $wpdb->get_results("SELECT FOUND_ROWS() AS 'FOUND_ROWS';", ARRAY_A);
+
+    return array("items" => $data, "foundRows" => $foundRows);
 }
 
 function p404_getPageTypes() {
@@ -114,3 +123,25 @@ function p404_redirect_to_save() {
 }
 
 add_action('wp_ajax_p404_redirect_to_save', 'p404_redirect_to_save');
+
+function p404_show_page() {
+
+    global $limit;
+
+    $page = intval($_POST["id"]);
+    $result = p404_getData(array("page" => $page, "limit" => $limit));
+    
+    ob_start();
+    $data = $result["items"];
+    require "datatable.php";
+    $html = ob_get_clean();
+
+    echo json_encode(array(
+        "success" => true,
+        "html" => $html
+    ));
+
+    wp_die();
+}
+
+add_action('wp_ajax_p404_show_page', 'p404_show_page');
