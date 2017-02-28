@@ -65,7 +65,7 @@ class newPHPClass {
         if (isset($_POST['limit'])) {
             $limit = $_POST['limit'];
         } else {
-            $limit = '0,1';
+            $limit = '0,2';
         }
 
         if (isset($_POST['count'])) {

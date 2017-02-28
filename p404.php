@@ -170,9 +170,9 @@ function p404_admin_bar_render($wp_admin_bar) {
     );
 
     if ($count == 1) {
-        $title = ' error page';
+        $title = ' Error Page';
     } else {
-        $title = ' error pages';
+        $title = ' Error Pages';
     }
 
     $args['meta']['title'] = $title;

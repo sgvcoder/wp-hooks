@@ -39,17 +39,13 @@
 
 <div>
 
-    <div class="row">
-        <?php // print_r($foundRows);  ?>
-    </div>
-
     <div class="container-fluid">
         <div class="row hidden-xs hidden-sm">
-            <div class="col-md-4"><label>URL:</label></div>
-            <div class="col-md-4"><label>Redirect to:</label></div>
-            <div class="col-md-1"><label>Action:</label></div>
-            <div class="col-md-1"><label>Views:</label></div>
-            <div class="col-md-2"><label>Added at:</label></div>
+            <div class="col-md-4"><label><?php echo __("URL:", "custom-plugin"); ?></label></div>
+            <div class="col-md-4"><label><?php echo __("Redirect to:", "custom-plugin"); ?></label></div>
+            <div class="col-md-1"><label><?php echo __("Action:", "custom-plugin"); ?></label></div>
+            <div class="col-md-1"><label><?php echo __("Views:", "custom-plugin"); ?></label></div>
+            <div class="col-md-2"><label><?php echo __("Added at:", "custom-plugin"); ?></label></div>
         </div>
         <div id="p404-data-table">
             <?php require_once "datatable.php"; ?>
@@ -76,12 +72,12 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">Redirect to:</h4>
+                <h4 class="modal-title"><?php echo __("Redirect to:", "custom-plugin"); ?></h4>
             </div>
             <div class="modal-body">
                 <div class="form-horizontal">
                     <div class="form-group">
-                        <label class="col-sm-2 control-label" for="p404-url-o-m-types">Type:</label>
+                        <label class="col-sm-2 control-label" for="p404-url-o-m-types"><?php echo __("Type:", "custom-plugin"); ?></label>
                         <div class="col-sm-10">
                             <select class="form-control" name="p404-url-o-m-types" id="p404-url-o-m-types">
                                 <?php foreach ($pageTypes as $value): ?>
@@ -91,7 +87,7 @@
                         </div>
                     </div>
                     <div class="form-group p404-url-o-m-l p404-url-o-m-l-pages">
-                        <label class="col-sm-2 control-label" for="p404-url-o-m-link">Link to:</label>
+                        <label class="col-sm-2 control-label" for="p404-url-o-m-link"><?php echo __("Link to:", "custom-plugin"); ?></label>
                         <div class="col-sm-10">
                             <select class="form-control" name="p404-url-o-m-link" id="p404-url-o-m-link">
                                 <?php foreach ($pages as $value): ?>
@@ -101,7 +97,7 @@
                         </div>
                     </div>
                     <div class="form-group hidden p404-url-o-m-l p404-url-o-m-l-posts">
-                        <label class="col-sm-2 control-label" for="p404-url-o-m-link">Link to:</label>
+                        <label class="col-sm-2 control-label" for="p404-url-o-m-link"><?php echo __("Link to:", "custom-plugin"); ?></label>
                         <div class="col-sm-10">
                             <select class="form-control" name="p404-url-o-m-link" id="p404-url-o-m-link">
                                 <?php foreach ($posts as $value): ?>
@@ -113,8 +109,8 @@
                 </div>
             </div>
             <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id="p404-url-o-m-apply"><?php echo __("Apply", "custom-plugin"); ?></button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" id="p404-url-o-m-apply">Apply</button>
             </div>
         </div>
     </div>
