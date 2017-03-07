@@ -95,3 +95,14 @@ function setProductAttributes($post_id = null, $data = null) {
     update_post_meta($post_id, '_product_attributes', $data);
 }
 
+function addMetaBox($page, $context) {
+
+    add_meta_box("aaaaaa", "Title Aaaa", 'metaBoxContent', "shop_order", "normal", "high");
+}
+
+function metaBoxContent() {
+
+    echo _e('Test', 'page-links-to');
+}
+
+add_action('do_meta_boxes', 'addMetaBox', 1, 999);
