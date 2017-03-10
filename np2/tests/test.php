@@ -1,3 +1,5 @@
+
+
 <?php
 echo "<pre>";
 
@@ -42,80 +44,87 @@ $np = new NovaPoshtaApi2(
 //$result = $np->getDocumentPrice($sender_city_ref, $recipient_city_ref, 'WarehouseWarehouse', $weight, $price);
 //print_r($result);
 
-
+//$city = $sender_person = $np->getCities();
 // Перед генерированием ЭН необходимо получить данные отправителя
 // Получение всех отправителей
-$senderInfo = $np->getCounterparties('Sender', 1, '', '');
-// Выбор отправителя в конкретном городе (в данном случае - в первом попавшемся)
-$sender = $senderInfo['data'][0];
-// Информация о складе отправителя
-$senderWarehouses = $np->getWarehouses($sender['City']);
-// Генерирование новой накладной
-$result = $np->newInternetDocument(
-    // Данные отправителя
-    array(
-        // Данные пользователя
-        'FirstName' => $sender['FirstName'],
-        'MiddleName' => $sender['MiddleName'],
-        'LastName' => $sender['LastName'],
-        // Вместо FirstName, MiddleName, LastName можно ввести зарегистрированные ФИО отправителя или название фирмы для юрлиц
-        // (можно получить, вызвав метод getCounterparties('Sender', 1, '', ''))
-        // 'Description' => $sender['Description'],
-        // Необязательное поле, в случае отсутствия будет использоваться из данных контакта
-        // 'Phone' => '0631112233',
-        // Город отправления
-        // 'City' => 'Белгород-Днестровский',
-        // Область отправления
-        // 'Region' => 'Одесская',
-        'CitySender' => $sender['City'],
-        // Отделение отправления по ID (в данном случае - в первом попавшемся)
-        'SenderAddress' => $senderWarehouses['data'][0]['Ref'],
-        // Отделение отправления по адресу
-        // 'Warehouse' => $senderWarehouses['data'][0]['DescriptionRu'],
-    ),
-    // Данные получателя
-    array(
-        'FirstName' => 'Сидор',
-        'MiddleName' => 'Сидорович',
-        'LastName' => 'Сиродов',
-        'Phone' => '0509998877',
-        'City' => 'Киев',
-        'Region' => 'Киевская',
-        'Warehouse' => 'Отделение №3: ул. Калачевская, 13 (Старая Дарница)',
-    ),
-    array(
-        // Дата отправления
-        'DateTime' => date('d.m.Y'),
-        // Тип доставки, дополнительно - getServiceTypes()
-        'ServiceType' => 'WarehouseWarehouse',
-        // Тип оплаты, дополнительно - getPaymentForms()
-        'PaymentMethod' => 'Cash',
-        // Кто оплачивает за доставку
-        'PayerType' => 'Recipient',
-        // Стоимость груза в грн
-        'Cost' => '500',
-        // Кол-во мест
-        'SeatsAmount' => '1',
-        // Описание груза
-        'Description' => 'Кастрюля',
-        // Тип доставки, дополнительно - getCargoTypes
-        'CargoType' => 'Cargo',
-        // Вес груза
-        'Weight' => '10',
-        // Объем груза в куб.м.
-        'VolumeGeneral' => '0.5',
-        // Обратная доставка
-        'BackwardDeliveryData' => array(
-            array(
-                // Кто оплачивает обратную доставку
-                'PayerType' => 'Recipient',
-                // Тип доставки
-                'CargoType' => 'Money',
-                // Значение обратной доставки
-                'RedeliveryString' => 4552,
-            )
-        )
-    )
-);
-print_r($result);
+//$senderInfo = $np->getCounterparties('Sender', 1, '', '');
+//// Выбор отправителя в конкретном городе (в данном случае - в первом попавшемся)
+//$sender = $senderInfo['data'][0];
+//$sender_person = $np->getCounterpartyContactPersons($sender["Ref"]);
+//
+//// Информация о складе отправителя
+//$senderWarehouses = $np->getWarehouses("8e1718f5-1972-11e5-add9-005056887b8d");
+//// Генерирование новой накладной
+//$result = $np->newInternetDocument(
+//    // Данные отправителя
+//    array(
+//        // Данные пользователя
+//        "Sender" => $sender["Ref"],
+//        "ContactSender" => $sender_person["data"][0]['Ref'],
+//        'FirstName' => $sender_person["data"][0]['FirstName'],
+//        'MiddleName' => $sender_person["data"][0]['MiddleName'],
+//        'LastName' => $sender_person["data"][0]['LastName'],
+//        // Вместо FirstName, MiddleName, LastName можно ввести зарегистрированные ФИО отправителя или название фирмы для юрлиц
+//        // (можно получить, вызвав метод getCounterparties('Sender', 1, '', ''))
+//        // 'Description' => $sender['Description'],
+//        // Необязательное поле, в случае отсутствия будет использоваться из данных контакта
+//        'SendersPhone' => '0631112233',
+//        // Город отправления
+//        // 'City' => 'Белгород-Днестровский',
+//        // Область отправления
+//        // 'Region' => 'Одесская',
+//        'CitySender' => "8e1718f5-1972-11e5-add9-005056887b8d",
+//        // Отделение отправления по ID (в данном случае - в первом попавшемся)
+//        'SenderAddress' => $senderWarehouses['data'][0]['Ref'],
+//        // Отделение отправления по адресу
+//        // 'Warehouse' => $senderWarehouses['data'][0]['DescriptionRu'],
+//    ),
+//    // Данные получателя
+//    array(
+//        'FirstName' => 'Сидор',
+//        'MiddleName' => 'Сидорович',
+//        'LastName' => 'Сиродов',
+//        'Phone' => '0509998877',
+//        'City' => 'Киев',
+//        'Region' => 'Киевская',
+//        'Warehouse' => 'Отделение №3: ул. Калачевская, 13 (Старая Дарница)',
+//    ),
+//    array(
+//        // Дата отправления
+//        'DateTime' => date('d.m.Y'),
+//        // Тип доставки, дополнительно - getServiceTypes()
+//        'ServiceType' => 'WarehouseWarehouse',
+//        // Тип оплаты, дополнительно - getPaymentForms()
+//        'PaymentMethod' => 'Cash',
+//        // Кто оплачивает за доставку
+//        'PayerType' => 'Recipient',
+//        // Стоимость груза в грн
+//        'Cost' => '500',
+//        // Кол-во мест
+//        'SeatsAmount' => '1',
+//        // Описание груза
+//        'Description' => 'Кастрюля',
+//        // Тип доставки, дополнительно - getCargoTypes
+//        'CargoType' => 'Cargo',
+//        // Вес груза
+//        'Weight' => '10',
+//        // Объем груза в куб.м.
+//        'VolumeGeneral' => '0.5',
+//        // Обратная доставка
+//        'BackwardDeliveryData' => array(
+//            array(
+//                // Кто оплачивает обратную доставку
+//                'PayerType' => 'Recipient',
+//                // Тип доставки
+//                'CargoType' => 'Money',
+//                // Значение обратной доставки
+//                'RedeliveryString' => 4552,
+//            )
+//        )
+//    )
+//);
+//print_r($result); // IntDocNumber] => 20450036108001, [Ref] => 303a2c99-0553-11e7-8ba8-005056881c6b
+
+$doc = $np->getDocument("303a2c99-0553-11e7-8ba8-005056881c6b");
+print_r($doc);
 exit;
